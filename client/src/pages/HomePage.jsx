@@ -1,19 +1,52 @@
-import React, { useContext, useState } from "react";
+import { useContext } from "react";
 import Sidebar from "../components/Sidebar";
 import ChatContainer from "../components/ChatContainer";
 import RightSidebar from "../components/RightSidebar";
 import { ChatContext } from "../../context/ChatContext";
 
 const HomePage = () => {
-    const { selectedUser } = useContext(ChatContext);
+    const { selectedUser, isRightSidebarOpen } = useContext(ChatContext);
 
     return (
-        <div className="border w-full h-screen sm:px-[15%] sm:py-[5%]">
-            <div
-                className={`backdrop-blur-xl border-2 border-gray-600 rounded-2x1 overflow-hidden h-[100%] grid grid-cols-1 relative ${selectedUser ? "md:grid-cols-[1fr_1.5fr_1fr] xl:grid-cols-[1fr_2fr_1fr]" : "md:grid-cols-2"}`}>
-                <Sidebar />
-                <ChatContainer />
-                <RightSidebar />
+        <div className="w-full h-screen flex items-center justify-center p-3 sm:p-4 lg:p-6 overflow-hidden">
+            {/* Main Container */}
+            <div className="w-full max-w-[1800px] h-full max-h-[95vh] relative">
+                
+                {/* Decorative Background Elements - Enhanced visibility */}
+                <div className="absolute -top-24 -left-24 w-80 h-80 bg-indigo-500/30 rounded-full blur-3xl animate-pulse"></div>
+                <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-purple-500/25 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+                
+                {/* Glass Container */}
+                <div
+                    className={`relative z-10 backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl overflow-hidden h-full shadow-2xl grid transition-all duration-300 ${
+                        selectedUser && isRightSidebarOpen
+                            ? "grid-cols-1 md:grid-cols-[360px_1fr] lg:grid-cols-[380px_1fr_420px]" 
+                            : selectedUser
+                            ? "grid-cols-1 md:grid-cols-[360px_1fr]"
+                            : "grid-cols-1 md:grid-cols-[420px_1fr]"
+                    }`}
+                    style={{ gridTemplateRows: "100%" }} // Grid row height force cheyyunnu
+                >
+                    {/* Sidebar Container */}
+                    <div className={`${selectedUser ? "hidden md:block" : "block"} h-full min-h-0 overflow-hidden`}>
+                        <Sidebar />
+                    </div>
+                    
+                    {/* Chat Container */}
+                    <div className={`${selectedUser ? "block" : "hidden md:block"} h-full min-h-0 overflow-hidden`}>
+                        <ChatContainer />
+                    </div>
+                    
+                    {/* Right Sidebar */}
+                    {selectedUser && isRightSidebarOpen && (
+                        <div className="hidden lg:block h-full min-h-0 border-l border-white/10 overflow-hidden">
+                            <RightSidebar />
+                        </div>
+                    )}
+                </div>
+
+                {/* Bottom Glow */}
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-px bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent"></div>
             </div>
         </div>
     );

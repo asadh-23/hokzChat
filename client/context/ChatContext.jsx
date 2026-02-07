@@ -9,8 +9,9 @@ export const ChatProvider = ({ children }) => {
     const [users, setUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
     const [unseenMessages, setUnseenMessages] = useState({});
+    const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
 
-    const { socket, axios } = useContext(AuthContext);
+    const { socket, axios, authUser } = useContext(AuthContext);
 
     // Get users for sidebar
     const getUsers = async () => {
@@ -38,21 +39,63 @@ export const ChatProvider = ({ children }) => {
     };
 
     // Send message
-    const sendMessage = async (messageData) => {
+    const sendMessage = async (formData) => {
         if (!selectedUser) return;
+        const tempId = Date.now().toString();
+
+        const text = formData.get("text");
+        const file = formData.get("file");
+
+        // Memory optimize cheyyaan vendi oru temp variable
+        let objectUrl = null;
+        if (file) objectUrl = URL.createObjectURL(file);
+
+        const optimisticMessage = {
+            _id: tempId,
+            senderId: authUser._id,
+            receiverId: selectedUser._id,
+            text: text || "",
+            fileUrl: objectUrl,
+            fileType: file ? file.type : null,
+            createdAt: new Date().toISOString(),
+            isSending: true,
+        };
+
+        setMessages((prev) => [...prev, optimisticMessage]);
 
         try {
-            const { data } = await axios.post(`/api/messages/send/${selectedUser._id}`, messageData);
+            const { data } = await axios.post(`/api/messages/send/${selectedUser._id}`, formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
 
             if (data.success) {
-                setMessages((prev) => [...prev, data.newMessage]);
-            } else {
-                toast.error(data.message);
+                setMessages((prev) => prev.map((msg) => (msg._id === tempId ? data.newMessage : msg)));
+                if (objectUrl) {
+                    setTimeout(() => URL.revokeObjectURL(objectUrl), 2000);
+                }
             }
         } catch (error) {
-            toast.error(error.message);
+            setMessages((prev) => prev.filter((msg) => msg._id !== tempId));
+            toast.error("Failed to send");
+            if (objectUrl) URL.revokeObjectURL(objectUrl);
         }
     };
+
+    useEffect(() => {
+        if (!socket) return;
+
+        const handleBatchDelivered = ({ deliveredBy }) => {
+            setMessages((prev) =>
+                prev.map((msg) => (msg.receiverId === deliveredBy && !msg.delivered ? { ...msg, delivered: true } : msg)),
+            );
+        };
+
+        socket.on("batchMessagesDelivered", handleBatchDelivered);
+
+        return () => {
+            socket.off("batchMessagesDelivered", handleBatchDelivered);
+        };
+    }, [socket]);
 
     // Subscribe to incoming socket messages (CORRECT WAY)
     useEffect(() => {
@@ -63,6 +106,7 @@ export const ChatProvider = ({ children }) => {
             if (selectedUser && newMessage.senderId === selectedUser._id) {
                 setMessages((prev) => [...prev, newMessage]);
 
+                setUnseenMessages((prev) => ({ ...prev, [newMessage.senderId]: 0 }));
                 // mark message as seen
                 try {
                     await axios.put(`/api/messages/mark/${newMessage._id}`);
@@ -70,7 +114,6 @@ export const ChatProvider = ({ children }) => {
                     console.error("Mark seen failed");
                 }
             } else {
-                // increase unseen count for sender
                 setUnseenMessages((prev) => ({
                     ...prev,
                     [newMessage.senderId]: (prev[newMessage.senderId] || 0) + 1,
@@ -124,6 +167,8 @@ export const ChatProvider = ({ children }) => {
         sendMessage,
         unseenMessages,
         setUnseenMessages,
+        isRightSidebarOpen,
+        setIsRightSidebarOpen,
     };
 
     return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;

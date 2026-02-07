@@ -35,15 +35,12 @@ export const signup = async (req, res) => {
 
         // 6. Generate JWT
         const token = generateToken(newUser._id);
-        console.log('token : ' + token);
-        
+        console.log("token : " + token);
 
         // 7. Remove password before sending response
         const userObj = newUser.toObject();
         delete userObj.password;
 
-        
-        
         // 8. Send response
         return res.status(201).json({
             success: true,
@@ -59,7 +56,6 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
     try {
-        
         const { email, password } = req.body;
 
         // 1. Validate input
@@ -67,20 +63,14 @@ export const login = async (req, res) => {
             return res.status(400).json({ success: false, message: "Missing credentials" });
         }
 
-        console.log('1111');
-        
         // 2. Normalize email
         const normalizedEmail = email.toLowerCase().trim();
-
-        console.log('2222')
 
         // 3. Find user
         const user = await User.findOne({ email: normalizedEmail });
         if (!user) {
             return res.status(401).json({ success: false, message: "Invalid credentials" });
         }
-
-        console.log("333")
 
         // 4. Compare password
         const isPasswordCorrect = await bcrypt.compare(password, user.password);
@@ -109,11 +99,9 @@ export const login = async (req, res) => {
 };
 
 export const checkAuth = (req, res) => {
-    
     if (!req.user) {
         return res.status(401).json({ success: false, message: "Unauthorized" });
     }
-    
 
     return res.status(200).json({
         success: true,
@@ -151,11 +139,7 @@ export const updateProfileInfo = async (req, res) => {
             updateData.bio = bio;
         }
 
-        const updatedUser = await User.findByIdAndUpdate(
-            req.user._id,
-            updateData,
-            { new: true, select: "-password" }
-        );
+        const updatedUser = await User.findByIdAndUpdate(req.user._id, updateData, { new: true, select: "-password" });
 
         if (!updatedUser) {
             return res.status(404).json({
@@ -169,7 +153,6 @@ export const updateProfileInfo = async (req, res) => {
             user: updatedUser,
             message: "Profile info updated successfully",
         });
-
     } catch (error) {
         console.error("Update profile info error:", error.message);
         return res.status(500).json({
@@ -205,7 +188,7 @@ export const updateProfileImage = async (req, res) => {
         const updatedUser = await User.findByIdAndUpdate(
             req.user._id,
             { profilePic: upload.secure_url },
-            { new: true, select: "-password" }
+            { new: true, select: "-password" },
         );
 
         if (!updatedUser) {
@@ -220,7 +203,6 @@ export const updateProfileImage = async (req, res) => {
             user: updatedUser,
             message: "Profile image updated successfully",
         });
-
     } catch (error) {
         console.error("Update profile image error:", error.message);
         return res.status(500).json({

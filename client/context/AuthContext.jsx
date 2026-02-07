@@ -21,13 +21,14 @@ export const AuthProvider = ({ children }) => {
     const checkAuth = async () => {
         try {
             const { data } = await axios.get("/api/auth/check");
-            if (data.success) {
+
+            if (data?.success) {
                 setAuthUser(data.user);
                 connectSocket(data.user);
             }
         } catch (error) {
-            toast.error(error.message || "Authentication error");
-        }finally{
+            console.log(error.response?.data?.message || error.message || "Authentication error");
+        } finally {
             setLoading(false);
         }
     };
@@ -35,7 +36,6 @@ export const AuthProvider = ({ children }) => {
     // login function to handle user authentication and socket connection
     const login = async (state, credentials) => {
         try {
-
             const { data } = await axios.post(`/api/auth/${state}`, credentials);
             if (data.success) {
                 setAuthUser(data.userData);
@@ -58,6 +58,7 @@ export const AuthProvider = ({ children }) => {
         setToken(null);
         setAuthUser(null);
         setOnlineUsers([]);
+        setSocket(null);
         axios.defaults.headers.common["token"] = null;
 
         toast.success("Logged out successfully");
@@ -105,20 +106,23 @@ export const AuthProvider = ({ children }) => {
                 userId: userData._id,
             },
         });
-        
+
         newSocket.connect();
-        
+
         setSocket(newSocket);
 
         newSocket.on("getOnlineUsers", (userIds) => {
             console.log("userIds : = ", userIds);
-            
+
             setOnlineUsers(userIds);
         });
     };
 
     useEffect(() => {
-        if (!token) return;
+        if (!token) {
+            setLoading(false);
+            return;
+        }
 
         axios.defaults.headers.common["token"] = token;
         checkAuth();
@@ -133,7 +137,7 @@ export const AuthProvider = ({ children }) => {
         logout,
         updateProfileInfo,
         updateProfileImage,
-        loading
+        loading,
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

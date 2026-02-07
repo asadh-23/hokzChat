@@ -13,7 +13,8 @@ const messageSchema = new mongoose.Schema(
             required: true,
         },
         text: String,
-        image: String,
+        fileUrl: String,
+        fileType: String,
 
         delivered: {
             type: Boolean,

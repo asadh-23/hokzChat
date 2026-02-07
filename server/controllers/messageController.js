@@ -3,10 +3,30 @@ import Message from "../models/Message.js";
 import User from "../models/User.js";
 import { io, userSocketMap } from "../server.js";
 import mongoose from "mongoose";
+import streamifier from "streamifier";
 
 export const getUsersForSidebar = async (req, res) => {
     try {
         const userId = req.user._id;
+
+        const undeliveredMessages = await Message.find({ receiverId: userId, delivered: false });
+
+        if (undeliveredMessages.length > 0) {
+            await Message.updateMany({ receiverId: userId, delivered: false }, { $set: { delivered: true } });
+
+            const uniqueSenderIds = [...new Set(undeliveredMessages.map((msg) => msg.senderId.toString()))];
+
+            uniqueSenderIds.forEach((senderId) => {
+                const senderSockets = userSocketMap[senderId];
+                if (senderSockets) {
+                    senderSockets.forEach((socketId) => {
+                        io.to(socketId).emit("batchMessagesDelivered", {
+                            deliveredBy: userId,
+                        });
+                    });
+                }
+            });
+        }
 
         const users = await User.find({ _id: { $ne: userId } })
             .select("-password")
@@ -167,28 +187,60 @@ export const markMessageAsSeen = async (req, res) => {
 
 export const sendMessage = async (req, res) => {
     try {
-        const { text, image } = req.body;
+        const { text } = req.body;
+        const file = req.file;
         const receiverId = req.params.id;
         const senderId = req.user._id;
 
-        if (!text && !image) {
-            return res.status(400).json({
-                success: false,
-                message: "Message must contain text or image",
-            });
+        if (!text && !file) {
+            return res.status(400).json({ success: false, message: "Empty message" });
         }
 
-        let imageUrl;
-        if (image) {
-            const uploadResponse = await cloudinary.uploader.upload(image);
-            imageUrl = uploadResponse.secure_url;
+        let fileUrl;
+        let fileType = "text";
+
+        if (file) {
+            const uploadToCloudinary = () => {
+                return new Promise((resolve, reject) => {
+                    const isPDF = file.mimetype === "application/pdf";
+                    const uploadOptions = {
+                        resource_type: isPDF ? "image" : "auto",
+                        public_id: `file_${Date.now()}`,
+                    };
+
+                    if (isPDF) {
+                        uploadOptions.format = "pdf";
+                    }
+
+                    const cld_upload_stream = cloudinary.uploader.upload_stream(
+                        uploadOptions, // FIXED: Ningal nerathe ivide {resource_type: "auto"} ennaanu ittirunnath.
+                        (error, result) => {
+                            if (result) resolve(result);
+                            else reject(error);
+                        }
+                    );
+                    streamifier.createReadStream(file.buffer).pipe(cld_upload_stream);
+                });
+            };
+
+            const result = await uploadToCloudinary();
+            fileUrl = result.secure_url;
+
+            // Database-ilekk ulla type set cheyyunnu
+            if (file.mimetype === "application/pdf") {
+                fileType = "application/pdf";
+            } else {
+                fileType = result.resource_type; // 'image' or 'video'
+            }
         }
 
+        // 3. Database entry
         const newMessage = await Message.create({
             senderId,
             receiverId,
-            text: text ? text.trim() : undefined,
-            image: imageUrl,
+            text: text?.trim(),
+            fileUrl,
+            fileType,
         });
 
         const receiverSockets = userSocketMap[receiverId];
