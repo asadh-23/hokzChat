@@ -16,22 +16,36 @@ const ChatContainer = () => {
     const { authUser, onlineUsers } = useContext(AuthContext);
 
     const [input, setInput] = useState("");
+    const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
     const [filePreview, setFilePreview] = useState(null);
     const [fileToSend, setFileToSend] = useState(null);
     const [fileType, setFileType] = useState(null);
 
     useEffect(() => {
-        if (selectedUser) getMessages(selectedUser._id);
+        if (selectedUser) {
+            getMessages(selectedUser._id);
+            setShouldAutoScroll(true); // Auto-scroll when opening a new chat
+        }
     }, [selectedUser]);
 
+    // Detect user scroll
+    const handleScroll = () => {
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
+        setShouldAutoScroll(isNearBottom);
+    };
+
+    // Auto scroll only if user near bottom
     useEffect(() => {
-        if (scrollContainerRef.current) {
+        if (shouldAutoScroll && scrollContainerRef.current) {
             scrollContainerRef.current.scrollTo({
                 top: scrollContainerRef.current.scrollHeight,
                 behavior: "smooth",
             });
         }
-    }, [messages]);
+    }, [messages, shouldAutoScroll]);
 
     const handleSendMessage = async (e) => {
         e.preventDefault();
@@ -147,10 +161,10 @@ const ChatContainer = () => {
                 </div>
 
                 <div className="flex items-center gap-3">
-                    {/* Info/Toggle Button for RightSidebar */}
+                    {/* Info/Toggle Button - Visible on both mobile and desktop */}
                     <button
                         onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}
-                        className={`hidden lg:flex p-2 rounded-full transition-all hover:scale-110 ${
+                        className={`p-2 rounded-full transition-all hover:scale-110 ${
                             isRightSidebarOpen ? "bg-indigo-500/20 text-indigo-400" : "hover:bg-white/10 text-slate-400"
                         }`}
                         title={isRightSidebarOpen ? "Hide user info" : "Show user info"}
@@ -158,9 +172,10 @@ const ChatContainer = () => {
                         <Info className="w-5 h-5" />
                     </button>
 
+                    {/* Back button - Only on mobile (below 834px) */}
                     <button
                         onClick={() => setSelectedUser(null)}
-                        className="md:hidden p-1.5 rounded-full hover:bg-white/10 cursor-pointer transition-all hover:scale-110"
+                        className="mobile-only p-1.5 rounded-full hover:bg-white/10 cursor-pointer transition-all hover:scale-110"
                     >
                         <img src={assets.arrow_icon} alt="Back" className="w-6 h-6" />
                     </button>
@@ -170,6 +185,7 @@ const ChatContainer = () => {
             {/* Messages */}
             <div
                 ref={scrollContainerRef}
+                onScroll={handleScroll}
                 className="flex-1 overflow-y-auto p-5 space-y-5 custom-scrollbar bg-transparent"
                 style={{ minHeight: 0 }}
             >
@@ -212,6 +228,7 @@ const ChatContainer = () => {
                                             {/* 2. VIDEO RENDERING: Video standard controls included */}
                                             {msg.fileType?.startsWith("video") && (
                                                 <video
+                                                    crossOrigin="anonymous"
                                                     src={msg.fileUrl}
                                                     controls
                                                     className={`w-full max-h-[400px] rounded-xl border border-white/10 ${isMessageLoading ? "opacity-50" : "opacity-100"}`}
@@ -298,6 +315,7 @@ const ChatContainer = () => {
                                 </div>
                             ) : fileType?.startsWith("video") ? (
                                 <video
+                                    crossOrigin="anonymous"
                                     src={filePreview}
                                     className="max-w-[220px] max-h-[220px] rounded-2xl border-2 border-white/20 object-contain shadow-xl"
                                 />
@@ -362,6 +380,19 @@ const ChatContainer = () => {
                     </button>
                 </form>
             </div>
+
+            {/* Custom breakpoint styles */}
+            <style>{`
+                .mobile-only {
+                    display: block;
+                }
+
+                @media (min-width: 834px) {
+                    .mobile-only {
+                        display: none;
+                    }
+                }
+            `}</style>
         </div>
     );
 };

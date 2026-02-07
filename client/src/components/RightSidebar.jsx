@@ -1,8 +1,8 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ChatContext } from "../../context/ChatContext";
 import { AuthContext } from "../../context/AuthContext";
 import assets from "../assets/assets";
-import { X, Image as ImageIcon, LogOut, FileText, PlayCircle } from "lucide-react";
+import { X, Image as ImageIcon, LogOut, ArrowLeft, FileText, PlayCircle } from "lucide-react";
 
 const RightSidebar = () => {
     const { selectedUser, messages, setIsRightSidebarOpen } = useContext(ChatContext);
@@ -11,7 +11,7 @@ const RightSidebar = () => {
 
     useEffect(() => {
         if (messages) {
-            // Filter logic for Images, Videos, and PDFs
+            // FIXED LOGIC: Extracting URL and Type to handle Images, Videos, and PDFs
             const media = messages
                 .filter((msg) => msg.fileUrl)
                 .map((msg) => ({
@@ -26,12 +26,22 @@ const RightSidebar = () => {
 
     return (
         <div className="h-full bg-slate-950/50 backdrop-blur-xl border-l border-white/10 flex flex-col transition-all duration-300">
-            {/* Close Button */}
-            <div className="flex justify-end p-4 border-b border-white/10">
+            {/* Header with Close/Back Button */}
+            <div className="flex items-center justify-between p-4 border-b border-white/10">
+                <button
+                    onClick={() => setIsRightSidebarOpen(false)}
+                    className="mobile-only p-2 rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition-all hover:scale-110"
+                    title="Back to chat"
+                >
+                    <ArrowLeft className="w-5 h-5" />
+                </button>
+
+                <h3 className="mobile-only text-white font-semibold">User Info</h3>
+
                 <button
                     onClick={() => setIsRightSidebarOpen(false)}
                     className="p-2 rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition-all hover:scale-110"
-                    title="Close sidebar"
+                    title="Close"
                 >
                     <X className="w-5 h-5" />
                 </button>
@@ -78,55 +88,47 @@ const RightSidebar = () => {
 
                 <hr className="border-white/10 my-8" />
 
-                {/* Shared Media Section */}
+                {/* Media Section */}
                 <div>
                     <div className="flex items-center justify-between mb-5">
                         <p className="text-sm font-semibold text-slate-100 uppercase tracking-wider flex items-center gap-2">
                             <ImageIcon className="w-4 h-4" />
                             Shared Media
                         </p>
-                        {/* FIXED: Using sharedMedia.length */}
                         <span className="text-xs bg-indigo-500/20 text-indigo-300 px-2.5 py-1 rounded-full font-bold">
                             {sharedMedia.length}
                         </span>
                     </div>
 
-                    {/* FIXED: Mapping sharedMedia instead of msgImages */}
                     {sharedMedia.length > 0 ? (
                         <div className="grid grid-cols-3 gap-2.5">
                             {sharedMedia.map((media, index) => (
                                 <div
                                     key={index}
                                     onClick={() => {
-                
-                                        if (media.url) {
-                                            if (media.type === "application/pdf") {
-                                                const previewUrl = media.url.replace(
-                                                    "/upload/",
-                                                    "/upload/f_auto,q_auto,pg_1/",
-                                                );
-                                                window.open(previewUrl, "_blank");
-                                            } else {
-                                                window.open(media.url, "_blank");
-                                            }
+                                        if (media.type === "application/pdf") {
+                                            // Handling PDF click with standard transformation
+                                            window.open(
+                                                media.url.replace("/upload/", "/upload/f_auto,q_auto,pg_1/"),
+                                                "_blank",
+                                            );
+                                        } else {
+                                            window.open(media.url, "_blank");
                                         }
                                     }}
                                     className="aspect-square cursor-pointer overflow-hidden rounded-xl border border-white/10 hover:border-indigo-500/50 transition-all group shadow-lg bg-slate-900 flex items-center justify-center"
                                 >
-                                    {/* VIDEO PREVIEW */}
                                     {media.type?.startsWith("video") ? (
                                         <div className="relative w-full h-full flex items-center justify-center">
                                             <video src={media.url} className="w-full h-full object-cover opacity-50" />
                                             <PlayCircle className="absolute w-8 h-8 text-white/80 group-hover:scale-125 transition-transform" />
                                         </div>
                                     ) : media.type === "application/pdf" ? (
-                                        /* PDF PREVIEW */
                                         <div className="flex flex-col items-center gap-1">
                                             <FileText className="w-8 h-8 text-red-500" />
                                             <span className="text-[8px] text-slate-400 font-bold uppercase">PDF</span>
                                         </div>
                                     ) : (
-                                        /* IMAGE PREVIEW */
                                         <img
                                             src={media.url}
                                             alt="media"
@@ -155,6 +157,34 @@ const RightSidebar = () => {
                     Logout
                 </button>
             </div>
+
+            {/* Custom Styles */}
+            <style>{`
+                .mobile-only {
+                    display: block;
+                }
+
+                @media (min-width: 834px) {
+                    .mobile-only {
+                        display: none;
+                    }
+                }
+
+                .custom-scrollbar::-webkit-scrollbar {
+                    width: 5px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: rgba(255, 255, 255, 0.08);
+                    border-radius: 10px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: rgba(255, 255, 255, 0.15);
+                    border-radius: 10px;
+                }
+            `}</style>
         </div>
     );
 };
