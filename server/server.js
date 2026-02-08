@@ -12,7 +12,7 @@ const server = http.createServer(app);
 
 const allowedOrigins = [
     "http://localhost:5173",
-    "https://your-vercel-project.vercel.app"
+    "https://hokz-chat.vercel.app"
 ];
 
 app.use(cors({
@@ -64,7 +64,6 @@ io.on("connection", (socket) => {
 });
 
 app.use(express.json({ limit: "4mb" }));
-app.use(cors());
 
 app.use("/api/status", (req, res) => res.send("Server is live"));
 app.use("/api/auth", userRouter);
