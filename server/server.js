@@ -10,11 +10,29 @@ import { Server } from "socket.io";
 const app = express();
 const server = http.createServer(app);
 
+const allowedOrigins = [
+    "http://localhost:5173",
+    "https://your-vercel-project.vercel.app"
+];
+
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
+    credentials: true
+}));
+
 // Initialize socket.io server
 export const io = new Server(server, {
-    cors: { origin: "*" },
+    cors: {
+        origin: allowedOrigins,
+        credentials: true
+    },
 });
-
 // Store online users
 export const userSocketMap = {}; // { userId: Set(socketId) }
 
