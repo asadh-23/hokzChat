@@ -18,6 +18,7 @@ export const getUsersForSidebar = async (req, res) => {
 
             uniqueSenderIds.forEach((senderId) => {
                 const senderSockets = userSocketMap[senderId];
+
                 if (senderSockets) {
                     senderSockets.forEach((socketId) => {
                         io.to(socketId).emit("batchMessagesDelivered", {
@@ -48,6 +49,7 @@ export const getUsersForSidebar = async (req, res) => {
         ]);
 
         const unseenMessages = {};
+
         unseenCounts.forEach((item) => {
             unseenMessages[item._id.toString()] = item.count;
         });
@@ -59,6 +61,7 @@ export const getUsersForSidebar = async (req, res) => {
         });
     } catch (error) {
         console.log("get users for sidebar error :", error.message);
+
         res.status(500).json({ success: false, message: error.message });
     }
 };
@@ -217,7 +220,7 @@ export const sendMessage = async (req, res) => {
                         (error, result) => {
                             if (result) resolve(result);
                             else reject(error);
-                        }
+                        },
                     );
                     streamifier.createReadStream(file.buffer).pipe(cld_upload_stream);
                 });

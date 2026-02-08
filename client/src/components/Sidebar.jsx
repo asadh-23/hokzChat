@@ -10,6 +10,8 @@ const Sidebar = () => {
     const { logout, onlineUsers } = useContext(AuthContext);
     const [input, setInput] = useState("");
 
+    const [showMenu, setShowMenu] = useState(false);
+
     const filteredUsers = input ? users.filter((user) => user.fullName.toLowerCase().includes(input.toLowerCase())) : users;
     const sortedUsers = [...filteredUsers].sort((a, b) => {
         const aOnline = onlineUsers.includes(a._id);
@@ -29,51 +31,69 @@ const Sidebar = () => {
                     <img src={assets.logo} alt="logo" className="w-36 object-contain brightness-110" />
 
                     {/* Menu Dropdown */}
-                    <div className="relative z-[100] group">
-                        <div className="p-2.5 hover:bg-white/10 rounded-xl cursor-pointer transition-all duration-200 hover:scale-105 active:bg-white/20">
+                    <div className="relative z-[110]">
+                        <div
+                            onClick={() => setShowMenu(!showMenu)}
+                            className="p-2.5 hover:bg-white/10 rounded-xl cursor-pointer transition-all duration-200 active:bg-white/20 touch-manipulation"
+                        >
                             <img
                                 src={assets.menu_icon}
                                 alt="Menu"
-                                className="w-5 h-5 opacity-70 group-hover:opacity-100 transition-opacity"
+                                className={`w-5 h-5 transition-opacity ${showMenu ? "opacity-100" : "opacity-70"}`}
                             />
                         </div>
 
-                        <div
-                            className="absolute top-full right-0 z-50 w-48 mt-2 py-2 rounded-2xl
-                            bg-slate-900/95 backdrop-blur-xl border border-white/10 shadow-2xl
-                            opacity-0 invisible scale-95 group-hover:opacity-100 group-hover:visible group-hover:scale-100
-                            transition-all duration-200 origin-top-right"
-                        >
-                            <button
-                                onClick={() => navigate("/profile")}
-                                className="w-full text-left px-5 py-3 text-sm text-slate-200 hover:bg-indigo-500/20 hover:text-white transition-colors flex items-center gap-3"
-                            >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                                    />
-                                </svg>
-                                Edit Profile
-                            </button>
-                            <div className="h-[1px] bg-white/5 my-1" />
-                            <button
-                                onClick={() => logout()}
-                                className="w-full text-left px-5 py-3 text-sm text-red-400 hover:bg-red-500/20 transition-colors flex items-center gap-3"
-                            >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                                    />
-                                </svg>
-                                Logout
-                            </button>
-                        </div>
+                        {/* Dropdown Menu - State based rendering */}
+                        {showMenu && (
+                            <>
+                                {/* Invisible Backdrop: Click anywhere to close */}
+                                <div className="fixed inset-0 z-[115] bg-transparent" onClick={() => setShowMenu(false)} />
+
+                                <div
+                                    className="absolute top-full right-0 z-[120] w-48 mt-2 py-2 rounded-2xl
+                                    bg-slate-900/95 backdrop-blur-xl border border-white/10 shadow-2xl
+                                    animate-in fade-in zoom-in-95 duration-200 origin-top-right"
+                                >
+                                    <button
+                                        onClick={() => {
+                                            setShowMenu(false);
+                                            navigate("/profile");
+                                        }}
+                                        className="w-full text-left px-5 py-3 text-sm text-slate-200 hover:bg-indigo-500/20 hover:text-white transition-colors flex items-center gap-3"
+                                    >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                            />
+                                        </svg>
+                                        Edit Profile
+                                    </button>
+
+                                    <div className="h-[1px] bg-white/5 my-1" />
+
+                                    <button
+                                        onClick={() => {
+                                            setShowMenu(false);
+                                            logout();
+                                        }}
+                                        className="w-full text-left px-5 py-3 text-sm text-red-400 hover:bg-red-500/20 transition-colors flex items-center gap-3"
+                                    >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                                            />
+                                        </svg>
+                                        Logout
+                                    </button>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
 
