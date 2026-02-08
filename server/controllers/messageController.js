@@ -216,7 +216,7 @@ export const sendMessage = async (req, res) => {
                     }
 
                     const cld_upload_stream = cloudinary.uploader.upload_stream(
-                        uploadOptions, // FIXED: Ningal nerathe ivide {resource_type: "auto"} ennaanu ittirunnath.
+                        uploadOptions,
                         (error, result) => {
                             if (result) resolve(result);
                             else reject(error);
@@ -229,11 +229,11 @@ export const sendMessage = async (req, res) => {
             const result = await uploadToCloudinary();
             fileUrl = result.secure_url;
 
-            // Database-ilekk ulla type set cheyyunnu
+      
             if (file.mimetype === "application/pdf") {
                 fileType = "application/pdf";
             } else {
-                fileType = result.resource_type; // 'image' or 'video'
+                fileType = result.resource_type;
             }
         }
 

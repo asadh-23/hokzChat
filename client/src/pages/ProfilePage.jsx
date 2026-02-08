@@ -62,9 +62,7 @@ const ProfilePage = () => {
     };
 
     return (
-      
         <div className="h-full w-full flex items-center justify-center p-4 sm:p-6 overflow-y-auto custom-scrollbar touch-auto">
-            {/* Main Card Wrapper - py-10 നൽകുന്നത് മൊബൈലിൽ സ്ക്രോൾ ചെയ്യുമ്പോൾ ലാസ്റ്റ് ബട്ടൺ വ്യക്തമായി കാണാൻ സഹായിക്കും */}
             <div className="relative z-10 w-full max-w-[350px] sm:max-w-[400px] animate-in fade-in zoom-in-95 duration-500 my-auto py-10">
                 {/* Glassmorphic Container */}
                 <div className="bg-white/10 backdrop-blur-2xl border border-white/20 rounded-[2.5rem] p-6 sm:p-10 text-center shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col gap-6 sm:gap-8">

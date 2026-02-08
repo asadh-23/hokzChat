@@ -11,7 +11,6 @@ const RightSidebar = () => {
 
     useEffect(() => {
         if (messages) {
-            // FIXED LOGIC: Extracting URL and Type to handle Images, Videos, and PDFs
             const media = messages
                 .filter((msg) => msg.fileUrl)
                 .map((msg) => ({
@@ -107,7 +106,6 @@ const RightSidebar = () => {
                                     key={index}
                                     onClick={() => {
                                         if (media.type === "application/pdf") {
-                                            // Handling PDF click with standard transformation
                                             window.open(
                                                 media.url.replace("/upload/", "/upload/f_auto,q_auto,pg_1/"),
                                                 "_blank",

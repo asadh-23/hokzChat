@@ -55,7 +55,6 @@ const ChatContainer = () => {
 
     const handleSendMessage = async (e) => {
         e.preventDefault();
-        // Logical Fix: Use fileToSend instead of imageFile
         if (!input.trim() && !fileToSend) return;
 
         const formData = new FormData();

@@ -53,7 +53,6 @@ const LoginPage = () => {
 
     return (
         <div className="fixed inset-0 w-full h-[100dvh] flex items-center justify-center p-4 sm:p-6 md:p-10 overflow-hidden touch-none select-none">
-            {/* Background Overlay: Glassmorphism effect മെച്ചപ്പെടുത്താൻ */}
             <div className="absolute inset-0 bg-slate-950/20 backdrop-blur-[2px]" />
 
             {/* Main Content Wrapper */}
@@ -140,14 +139,13 @@ const LoginPage = () => {
                     {/* Submit Button */}
                     <button
                         type="submit"
-                        disabled={isLoggingIn} 
+                        disabled={isLoggingIn}
                         className={`mt-1 md:mt-2 bg-indigo-600 hover:bg-indigo-500 active:scale-[0.98] 
                                     transition-all py-3 sm:py-3.5 md:py-3 rounded-xl font-bold tracking-wide text-sm sm:text-base shadow-lg shadow-indigo-600/20 
                                     flex items-center justify-center gap-2 ${isLoggingIn ? "opacity-70 cursor-not-allowed" : ""}`}
                     >
                         {isLoggingIn ? (
                             <>
-                               
                                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                                 {currState === "Sign up" ? "Creating Account..." : "Signing In..."}
                             </>

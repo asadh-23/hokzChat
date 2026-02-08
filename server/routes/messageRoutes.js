@@ -1,5 +1,5 @@
 import express from "express";
-import multer from "multer"; // 1. Multer import cheyyuka
+import multer from "multer";
 import { protectRoute } from "../middleware/auth.js";
 import { getMessages, getUsersForSidebar, markMessageAsSeen, sendMessage } from "../controllers/messageController.js";
 

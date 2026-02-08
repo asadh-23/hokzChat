@@ -12,7 +12,6 @@ const App = () => {
 
     if (loading) {
         return (
-            /* h-[100dvh] ensures centering even with mobile address bars */
             <div className="h-[100dvh] w-full flex items-center justify-center bg-[#0f0c29]">
                 <div className="flex flex-col items-center gap-4">
                     <div className="w-12 h-12 border-4 border-violet-500 border-t-transparent rounded-full animate-spin" />
@@ -23,7 +22,6 @@ const App = () => {
     }
 
     return (
-        /* ഡിസൈൻ മാറ്റാതെ കണ്ടന്റ് ലോക്ക് ചെയ്യാൻ h-screen നൊപ്പം overflow-hidden മാത്രം മതി */
         <div className="h-screen w-full overflow-hidden relative">
             {/* Background Layer */}
             <div

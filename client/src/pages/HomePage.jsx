@@ -19,7 +19,7 @@ const HomePage = () => {
             const timer = setTimeout(() => {
                 setShouldRender(false);
                 setIsClosing(false);
-            }, 300); // Match animation duration
+            }, 300);
             return () => clearTimeout(timer);
         }
     }, [isRightSidebarOpen, shouldRender]);
