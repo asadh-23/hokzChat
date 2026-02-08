@@ -5,7 +5,7 @@ import RightSidebar from "../components/RightSidebar";
 import { ChatContext } from "../../context/ChatContext";
 
 const HomePage = () => {
-    const { selectedUser, isRightSidebarOpen, setIsRightSidebarOpen } = useContext(ChatContext);
+    const { selectedUser, isRightSidebarOpen, setIsRightSidebarOpen, setSelectedUser } = useContext(ChatContext);
     const [isClosing, setIsClosing] = useState(false);
     const [shouldRender, setShouldRender] = useState(false);
 
@@ -23,6 +23,24 @@ const HomePage = () => {
             return () => clearTimeout(timer);
         }
     }, [isRightSidebarOpen, shouldRender]);
+
+    useEffect(() => {
+        if (selectedUser) {
+            window.history.pushState({ chatOpen: true }, "");
+        }
+
+        const handleBackButton = (event) => {
+            if (selectedUser) {
+                setSelectedUser(null);
+            }
+        };
+
+        window.addEventListener("popstate", handleBackButton);
+
+        return () => {
+            window.removeEventListener("popstate", handleBackButton);
+        };
+    }, [selectedUser, setSelectedUser]);
 
     return (
         <div className="fixed inset-0 w-full h-[100dvh] flex items-center justify-center p-0 sm:p-4 lg:p-6 overflow-hidden touch-none">

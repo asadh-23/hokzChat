@@ -153,35 +153,53 @@ const ChatContainer = () => {
     return (
         <div className="h-full flex flex-col bg-slate-950/30 backdrop-blur-xl relative" onClick={handleContainerClick}>
             {/* Header */}
-            <div className="flex items-center justify-between py-4 px-6 border-b border-white/10 bg-slate-900/50 shrink-0 backdrop-blur-xl" onClick={(e) => e.stopPropagation()}>
-                <div className="flex items-center gap-4">
-                    <div className="relative">
-                        <img
-                            src={selectedUser.profilePic || assets.defaultProfilePic}
-                            alt="user"
-                            className="w-12 h-12 rounded-full object-cover border-2 border-indigo-500/50 shadow-lg"
-                        />
-                        {onlineUsers.includes(selectedUser._id) && (
-                            <span className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-green-500 border-2 border-slate-900 shadow-lg animate-pulse" />
-                        )}
-                    </div>
-                    <div>
-                        <h3 className="font-semibold text-white text-base leading-tight">{selectedUser.fullName}</h3>
-                        <p className="text-xs text-slate-400 flex items-center gap-1.5">
-                            {onlineUsers.includes(selectedUser._id) ? (
-                                <>
-                                    <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                                    Online
-                                </>
-                            ) : (
-                                "Offline"
+            <div
+                className="flex items-center justify-between py-4 px-6 border-b border-white/10 bg-slate-900/50 shrink-0 backdrop-blur-xl relative z-[50]"
+                onClick={(e) => e.stopPropagation()}
+            >
+                {/* LEFT SIDE: Arrow + User Info (WhatsApp Style) */}
+                <div className="flex items-center gap-2 sm:gap-4">
+                    {/* Back Button (Mobile Only) */}
+                    <button
+                        onClick={() => setSelectedUser(null)}
+                        className="mobile-only p-1.5 rounded-full hover:bg-white/10 cursor-pointer active:scale-90 transition-all"
+                    >
+                        <img src={assets.arrow_icon} alt="Back" className="w-6 h-6" />
+                    </button>
+
+                    {/* Avatar & Name Group */}
+                    <div className="flex items-center gap-3">
+                        <div className="relative">
+                            <img
+                                src={selectedUser.profilePic || assets.defaultProfilePic}
+                                alt="user"
+                                className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-indigo-500/50 shadow-lg"
+                            />
+                            {onlineUsers.includes(selectedUser._id) && (
+                                <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 border-slate-900 shadow-lg animate-pulse" />
                             )}
-                        </p>
+                        </div>
+
+                        <div className="min-w-0">
+                            <h3 className="font-semibold text-white text-sm sm:text-base leading-tight truncate max-w-[140px] sm:max-w-none">
+                                {selectedUser.fullName}
+                            </h3>
+                            <p className="text-[10px] sm:text-xs text-slate-400 flex items-center gap-1.5">
+                                {onlineUsers.includes(selectedUser._id) ? (
+                                    <>
+                                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                                        Online
+                                    </>
+                                ) : (
+                                    "Offline"
+                                )}
+                            </p>
+                        </div>
                     </div>
                 </div>
 
+                {/* RIGHT SIDE: Action Buttons */}
                 <div className="flex items-center gap-3">
-                    {/* Info/Toggle Button - Visible on both mobile and desktop */}
                     <button
                         onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)}
                         className={`p-2 rounded-full transition-all hover:scale-110 ${
@@ -190,14 +208,6 @@ const ChatContainer = () => {
                         title={isRightSidebarOpen ? "Hide user info" : "Show user info"}
                     >
                         <Info className="w-5 h-5" />
-                    </button>
-
-                    {/* Back button - Only on mobile (below 834px) */}
-                    <button
-                        onClick={() => setSelectedUser(null)}
-                        className="mobile-only p-1.5 rounded-full hover:bg-white/10 cursor-pointer transition-all hover:scale-110"
-                    >
-                        <img src={assets.arrow_icon} alt="Back" className="w-6 h-6" />
                     </button>
                 </div>
             </div>
@@ -321,7 +331,10 @@ const ChatContainer = () => {
             </div>
 
             {/* Input Area */}
-            <div className="border-t border-white/10 bg-slate-900/60 backdrop-blur-xl shrink-0 relative z-10" onClick={(e) => e.stopPropagation()}>
+            <div
+                className="border-t border-white/10 bg-slate-900/60 backdrop-blur-xl shrink-0 relative z-10"
+                onClick={(e) => e.stopPropagation()}
+            >
                 {/* Image/File Preview - Smaller on mobile */}
                 {filePreview && (
                     <div className="p-2 sm:p-3 border-b border-white/10 overflow-x-auto">

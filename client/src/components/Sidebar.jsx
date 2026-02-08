@@ -29,8 +29,8 @@ const Sidebar = () => {
                     <img src={assets.logo} alt="logo" className="w-36 object-contain brightness-110" />
 
                     {/* Menu Dropdown */}
-                    <div className="relative group">
-                        <div className="p-2.5 hover:bg-white/10 rounded-xl cursor-pointer transition-all duration-200 hover:scale-105">
+                    <div className="relative z-[100] group">
+                        <div className="p-2.5 hover:bg-white/10 rounded-xl cursor-pointer transition-all duration-200 hover:scale-105 active:bg-white/20">
                             <img
                                 src={assets.menu_icon}
                                 alt="Menu"
