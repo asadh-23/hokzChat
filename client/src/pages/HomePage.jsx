@@ -25,7 +25,7 @@ const HomePage = () => {
     }, [isRightSidebarOpen, shouldRender]);
 
     return (
-        <div className="w-full h-screen flex items-center justify-center p-3 sm:p-4 lg:p-6 overflow-hidden">
+        <div className="fixed inset-0 w-full h-[100dvh] flex items-center justify-center p-0 sm:p-4 lg:p-6 overflow-hidden touch-none">
             {/* Main Container */}
             <div className="w-full max-w-[1800px] h-full max-h-[95vh] relative">
                 {/* Decorative Background Elements - Enhanced visibility */}

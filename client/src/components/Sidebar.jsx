@@ -11,6 +11,11 @@ const Sidebar = () => {
     const [input, setInput] = useState("");
 
     const filteredUsers = input ? users.filter((user) => user.fullName.toLowerCase().includes(input.toLowerCase())) : users;
+    const sortedUsers = [...filteredUsers].sort((a, b) => {
+        const aOnline = onlineUsers.includes(a._id);
+        const bOnline = onlineUsers.includes(b._id);
+        return aOnline === bOnline ? 0 : aOnline ? -1 : 1;
+    });
 
     useEffect(() => {
         getUsers();
@@ -94,7 +99,7 @@ const Sidebar = () => {
             <div className="flex-1 overflow-y-auto px-3 mt-2 space-y-1 custom-scrollbar">
                 <p className="px-4 py-2 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Recent Chats</p>
 
-                {filteredUsers.map((user, index) => {
+                {sortedUsers.map((user, index) => {
                     const isSelected = selectedUser?._id === user._id;
                     const isOnline = onlineUsers.includes(user._id);
 
