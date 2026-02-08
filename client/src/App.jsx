@@ -3,32 +3,29 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
-import {Toaster} from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import assets from "./assets/assets";
-
 
 const App = () => {
     const { authUser, loading } = useContext(AuthContext);
 
     if (loading) {
-    return (
-        <div className="h-screen w-full flex items-center justify-center bg-[#0f0c29]">
-            <div className="flex flex-col items-center gap-4">
-                <div className="w-12 h-12 border-4 border-violet-500 border-t-transparent rounded-full animate-spin" />
-                <p className="text-white text-sm tracking-wide opacity-80">
-                    Loading...
-                </p>
+        return (
+            <div className="h-screen w-full flex items-center justify-center bg-[#0f0c29]">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 border-4 border-violet-500 border-t-transparent rounded-full animate-spin" />
+                    <p className="text-white text-sm tracking-wide opacity-80">Loading...</p>
+                </div>
             </div>
-        </div>
-    );
-}
-
+        );
+    }
 
     return (
-        <div 
-            className="min-h-screen w-full bg-cover bg-no-repeat bg-center"
+        /* Ippo background image fixed aanu, so scroll cheythalum image move aavilla */
+        <div
+            className="h-screen w-full bg-cover bg-no-repeat bg-center bg-fixed overflow-hidden"
             style={{ backgroundImage: `url(${assets.bgImage})` }}
         >
             <Toaster />
