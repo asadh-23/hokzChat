@@ -28,55 +28,62 @@ const HomePage = () => {
         <div className="w-full h-screen flex items-center justify-center p-3 sm:p-4 lg:p-6 overflow-hidden">
             {/* Main Container */}
             <div className="w-full max-w-[1800px] h-full max-h-[95vh] relative">
-                
                 {/* Decorative Background Elements - Enhanced visibility */}
                 <div className="absolute -top-24 -left-24 w-80 h-80 bg-indigo-500/30 rounded-full blur-3xl animate-pulse"></div>
-                <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-purple-500/25 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-                
+                <div
+                    className="absolute -bottom-24 -right-24 w-96 h-96 bg-purple-500/25 rounded-full blur-3xl animate-pulse"
+                    style={{ animationDelay: "1s" }}
+                ></div>
+
                 {/* Glass Container */}
-                <div className="relative z-10 backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl overflow-hidden h-full shadow-2xl">
-                    
+                <div className="relative z-10 backdrop-blur-2xl bg-white/5 border border-white/10 rounded-3xl h-full shadow-2xl glass-container">
                     {/* Desktop Layout (>= 834px): Sidebar + ChatContainer side by side */}
                     <div className="desktop-layout h-full">
                         {/* Sidebar - Fixed width */}
                         <div className="h-full overflow-hidden">
                             <Sidebar />
                         </div>
-                        
+
                         {/* ChatContainer - Takes remaining space */}
                         <div className="h-full overflow-hidden relative">
                             <ChatContainer />
-                            
-                            {/* RightSidebar as Overlay/Drawer on Desktop */}
+
+                            {/* RightSidebar as Overlay - 50% width on desktop */}
                             {selectedUser && shouldRender && (
-                                <div className={`absolute inset-y-0 right-0 w-[420px] z-50 shadow-2xl ${
-                                    isClosing ? 'animate-slideOut' : 'animate-slideIn'
-                                }`}>
+                                <div
+                                    className={`absolute inset-y-0 right-0 w-1/2 z-50 shadow-2xl ${
+                                        isClosing ? "animate-slideOut" : "animate-slideIn"
+                                    }`}
+                                >
                                     <RightSidebar />
                                 </div>
                             )}
                         </div>
                     </div>
 
-                    {/* Mobile Layout (< 834px): Show one component at a time */}
-                    <div className="mobile-layout h-full">
-                        {/* Show Sidebar when no user selected and RightSidebar is closed */}
-                        {!selectedUser && !isRightSidebarOpen && (
+                    {/* Mobile Layout (< 834px): ChatContainer with RightSidebar overlay */}
+                    <div className="mobile-layout h-full relative">
+                        {/* Show Sidebar when no user selected */}
+                        {!selectedUser && (
                             <div className="h-full overflow-hidden">
                                 <Sidebar />
                             </div>
                         )}
-                        
-                        {/* Show ChatContainer when user is selected and RightSidebar is closed */}
-                        {selectedUser && !isRightSidebarOpen && (
+
+                        {/* Show ChatContainer when user is selected - Always visible */}
+                        {selectedUser && (
                             <div className="h-full overflow-hidden">
                                 <ChatContainer />
                             </div>
                         )}
-                        
-                        {/* Show RightSidebar when it's open (on mobile) */}
-                        {isRightSidebarOpen && (
-                            <div className="h-full overflow-hidden">
+
+                        {/* RightSidebar as Overlay - 50% width on mobile */}
+                        {selectedUser && shouldRender && (
+                            <div
+                                className={`absolute inset-y-0 right-0 w-1/2 z-50 shadow-2xl ${
+                                    isClosing ? "animate-slideOut" : "animate-slideIn"
+                                }`}
+                            >
                                 <RightSidebar />
                             </div>
                         )}
@@ -95,6 +102,11 @@ const HomePage = () => {
                 }
                 .desktop-layout {
                     display: none;
+                }
+
+                /* Glass container overflow handling */
+                .glass-container {
+                    overflow: hidden;
                 }
 
                 /* Desktop layout: visible at 834px and above */

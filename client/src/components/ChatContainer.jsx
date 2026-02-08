@@ -37,15 +37,21 @@ const ChatContainer = () => {
         setShouldAutoScroll(isNearBottom);
     };
 
-    // Auto scroll only if user near bottom
+    // Auto scroll to bottom when messages change
     useEffect(() => {
-        if (shouldAutoScroll && scrollContainerRef.current) {
-            scrollContainerRef.current.scrollTo({
-                top: scrollContainerRef.current.scrollHeight,
-                behavior: "smooth",
-            });
+        if (shouldAutoScroll && scrollEndRef.current) {
+            scrollEndRef.current.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
         }
     }, [messages, shouldAutoScroll]);
+
+    // Force scroll to bottom on initial load
+    useEffect(() => {
+        if (messages.length > 0 && scrollEndRef.current) {
+            setTimeout(() => {
+                scrollEndRef.current?.scrollIntoView({ behavior: "auto", block: "end", inline: "nearest" });
+            }, 100);
+        }
+    }, [selectedUser]);
 
     const handleSendMessage = async (e) => {
         e.preventDefault();
@@ -63,8 +69,15 @@ const ChatContainer = () => {
         setFileType(null);
         if (fileInputRef.current) fileInputRef.current.value = "";
 
+        // Enable auto-scroll for new message
+        setShouldAutoScroll(true);
+
         try {
             await sendMessage(formData);
+            // Force scroll to bottom after sending
+            setTimeout(() => {
+                scrollEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+            }, 100);
         } catch (error) {
             toast.error("Failed to send message");
         }
@@ -111,6 +124,13 @@ const ChatContainer = () => {
         if (fileInputRef.current) fileInputRef.current.value = "";
     };
 
+    // Close RightSidebar when clicking on ChatContainer
+    const handleContainerClick = () => {
+        if (isRightSidebarOpen) {
+            setIsRightSidebarOpen(false);
+        }
+    };
+
     if (!selectedUser) {
         return (
             <div className="h-full flex flex-col items-center justify-center gap-5 bg-slate-950/30 backdrop-blur-sm">
@@ -131,9 +151,9 @@ const ChatContainer = () => {
     }
 
     return (
-        <div className="h-full flex flex-col bg-slate-950/30 backdrop-blur-xl relative">
+        <div className="h-full flex flex-col bg-slate-950/30 backdrop-blur-xl relative" onClick={handleContainerClick}>
             {/* Header */}
-            <div className="flex items-center justify-between py-4 px-6 border-b border-white/10 bg-slate-900/50 shrink-0 backdrop-blur-xl">
+            <div className="flex items-center justify-between py-4 px-6 border-b border-white/10 bg-slate-900/50 shrink-0 backdrop-blur-xl" onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-center gap-4">
                     <div className="relative">
                         <img
@@ -301,36 +321,40 @@ const ChatContainer = () => {
             </div>
 
             {/* Input Area */}
-            <div className="border-t border-white/10 bg-slate-900/60 backdrop-blur-xl shrink-0">
-                {/* Image/File Preview */}
+            <div className="border-t border-white/10 bg-slate-900/60 backdrop-blur-xl shrink-0 relative z-10" onClick={(e) => e.stopPropagation()}>
+                {/* Image/File Preview - Smaller on mobile */}
                 {filePreview && (
-                    <div className="p-4 border-b border-white/10">
+                    <div className="p-2 sm:p-3 border-b border-white/10 overflow-x-auto">
                         <div className="relative inline-block group">
                             {fileType === "application/pdf" ? (
-                                <div className="w-[120px] h-[120px] rounded-2xl border-2 border-white/20 bg-slate-800 flex flex-col items-center justify-center gap-2 shadow-xl">
-                                    <img src={filePreview} alt="PDF Icon" className="w-12 h-12 object-contain" />
-                                    <span className="text-[10px] text-slate-400 font-medium px-2 truncate w-full text-center">
-                                        PDF Document
+                                <div className="w-[60px] h-[60px] sm:w-[80px] sm:h-[80px] rounded-lg sm:rounded-xl border-2 border-white/20 bg-slate-800 flex flex-col items-center justify-center gap-1 shadow-xl">
+                                    <img
+                                        src={filePreview}
+                                        alt="PDF Icon"
+                                        className="w-6 h-6 sm:w-8 sm:h-8 object-contain"
+                                    />
+                                    <span className="text-[8px] sm:text-[9px] text-slate-400 font-medium px-1 truncate w-full text-center">
+                                        PDF
                                     </span>
                                 </div>
                             ) : fileType?.startsWith("video") ? (
                                 <video
                                     crossOrigin="anonymous"
                                     src={filePreview}
-                                    className="max-w-[220px] max-h-[220px] rounded-2xl border-2 border-white/20 object-contain shadow-xl"
+                                    className="w-[80px] h-[80px] sm:w-[120px] sm:h-[120px] rounded-lg sm:rounded-xl border-2 border-white/20 object-cover shadow-xl"
                                 />
                             ) : (
                                 <img
                                     src={filePreview}
                                     alt="Preview"
-                                    className="max-w-[220px] max-h-[220px] rounded-2xl border-2 border-white/20 object-contain shadow-xl"
+                                    className="w-[80px] h-[80px] sm:w-[120px] sm:h-[120px] rounded-lg sm:rounded-xl border-2 border-white/20 object-cover shadow-xl"
                                 />
                             )}
 
                             <button
                                 type="button"
                                 onClick={handleRemoveImage}
-                                className="absolute -top-2 -right-2 w-7 h-7 bg-red-500 rounded-full flex items-center justify-center text-white text-lg font-bold shadow-lg z-10"
+                                className="absolute -top-1 -right-1 sm:-top-1.5 sm:-right-1.5 w-5 h-5 sm:w-6 sm:h-6 bg-red-500 hover:bg-red-600 active:bg-red-700 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-bold shadow-lg z-10 transition-all hover:scale-110 touch-manipulation"
                             >
                                 ×
                             </button>
@@ -339,14 +363,14 @@ const ChatContainer = () => {
                 )}
 
                 {/* Input Box - Wrapped in a form for better Enter key handling */}
-                <form onSubmit={handleSendMessage} className="p-4 flex items-center gap-3">
-                    <div className="flex items-center gap-3 flex-1 bg-slate-800/80 px-5 py-3 rounded-2xl border border-white/10 focus-within:border-indigo-500/50 transition-all">
+                <form onSubmit={handleSendMessage} className="p-2.5 sm:p-4 flex items-center gap-2 sm:gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3 flex-1 bg-slate-800/80 px-3 sm:px-5 py-2.5 sm:py-3 rounded-2xl border border-white/10 focus-within:border-indigo-500/50 transition-all min-w-0">
                         <input
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             type="text"
                             placeholder="Type a message..."
-                            className="flex-1 bg-transparent text-white text-sm outline-none placeholder:text-slate-500"
+                            className="flex-1 bg-transparent text-white text-sm outline-none placeholder:text-slate-500 min-w-0"
                         />
 
                         <input
@@ -354,27 +378,30 @@ const ChatContainer = () => {
                             id="file-input"
                             ref={fileInputRef}
                             hidden
-                            // Generic accept: images, videos, and pdf
                             accept="image/*,video/*,application/pdf"
                             onChange={handleFileSelect}
                         />
 
+                        {/* ChatContainer.jsx Input logic fix */}
                         <label
-                            htmlFor="file-input"
-                            className="cursor-pointer p-1.5 hover:bg-white/10 rounded-lg transition-all"
+                            onClick={(e) => {
+                                fileInputRef.current?.click();
+                            }}
+                            className="cursor-pointer p-1.5 hover:bg-white/10 active:bg-white/20 rounded-lg transition-all touch-manipulation shrink-0 flex items-center justify-center"
                         >
-                            <ImagePlus className="w-5 h-5 text-slate-400 hover:text-slate-300 transition-colors" />
+                            <ImagePlus className="w-5 h-5 text-slate-400" />
                         </label>
                     </div>
 
                     <button
                         type="submit"
                         disabled={!input.trim() && !filePreview}
-                        className={`p-3 rounded-xl transition-all duration-200 ${
+                        className={`p-2.5 sm:p-3 rounded-xl transition-all duration-200 shrink-0 touch-manipulation flex items-center justify-center ${
                             input.trim() || filePreview
-                                ? "bg-indigo-600 hover:bg-indigo-500 cursor-pointer hover:scale-105 shadow-lg shadow-indigo-500/30 text-white"
+                                ? "bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 cursor-pointer hover:scale-105 shadow-lg shadow-indigo-500/30 text-white"
                                 : "bg-slate-800/50 opacity-50 cursor-not-allowed text-slate-500"
                         }`}
+                        style={{ WebkitTapHighlightColor: "transparent" }}
                     >
                         <Send className="w-5 h-5" />
                     </button>
