@@ -62,21 +62,20 @@ const ProfilePage = () => {
     };
 
     return (
-        /* h-full respects App.jsx's h-screen, overflow-y-auto handles form scrolling on small phones */
-        <div className="h-full w-full flex items-center justify-center p-4 sm:p-6 overflow-y-auto custom-scrollbar">
-            {/* Main Card Wrapper */}
-            <div className="relative z-10 w-full max-w-[350px] sm:max-w-[400px] animate-in fade-in zoom-in-95 duration-500 my-auto">
+      
+        <div className="h-full w-full flex items-center justify-center p-4 sm:p-6 overflow-y-auto custom-scrollbar touch-auto">
+            {/* Main Card Wrapper - py-10 നൽകുന്നത് മൊബൈലിൽ സ്ക്രോൾ ചെയ്യുമ്പോൾ ലാസ്റ്റ് ബട്ടൺ വ്യക്തമായി കാണാൻ സഹായിക്കും */}
+            <div className="relative z-10 w-full max-w-[350px] sm:max-w-[400px] animate-in fade-in zoom-in-95 duration-500 my-auto py-10">
                 {/* Glassmorphic Container */}
                 <div className="bg-white/10 backdrop-blur-2xl border border-white/20 rounded-[2.5rem] p-6 sm:p-10 text-center shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col gap-6 sm:gap-8">
                     <h2 className="text-white text-xl sm:text-2xl font-bold tracking-tight opacity-95">Profile Details</h2>
 
-                    {/* PROFILE IMAGE - Responsive & Glowing */}
+                    {/* PROFILE IMAGE SECTION */}
                     <div className="flex flex-col items-center">
                         <div
                             className="relative inline-block cursor-pointer transition-all hover:scale-105 active:scale-95 group"
                             onClick={handleProfileImageClick}
                         >
-                            {/* Outer Glow Effect */}
                             <div className="absolute -inset-1 bg-gradient-to-tr from-purple-500 to-indigo-500 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-500"></div>
 
                             <img
@@ -99,7 +98,7 @@ const ProfilePage = () => {
                         />
                     </div>
 
-                    {/* NAME + BIO - Clean Inputs */}
+                    {/* NAME + BIO SECTION */}
                     <div className="flex flex-col gap-3 sm:gap-4">
                         {isEditing ? (
                             <input
@@ -122,7 +121,7 @@ const ProfilePage = () => {
                             <textarea
                                 value={editedBio}
                                 onChange={(e) => setEditedBio(e.target.value)}
-                                className="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white/90 text-sm w-full resize-none outline-none focus:border-purple-500/50 transition-all focus:bg-white/10"
+                                className="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white/90 text-sm w-full resize-none outline-none focus:border-purple-500/50 transition-all focus:bg-white/10 custom-scrollbar"
                                 rows="3"
                                 placeholder="Write a short bio..."
                             />
@@ -136,7 +135,7 @@ const ProfilePage = () => {
                         )}
                     </div>
 
-                    {/* ACTION BUTTONS - Mobile friendly stacking */}
+                    {/* ACTION BUTTONS */}
                     <div className="flex flex-col sm:flex-row justify-center gap-3">
                         {isEditing ? (
                             <>

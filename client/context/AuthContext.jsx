@@ -16,6 +16,7 @@ export const AuthProvider = ({ children }) => {
     const [onlineUsers, setOnlineUsers] = useState([]);
     const [socket, setSocket] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [isLoggingIn, setIsLoggingIn] = useState(false);
 
     // check if user is authenticated and if so, set the user data and connect the socket
     const checkAuth = async () => {
@@ -36,6 +37,7 @@ export const AuthProvider = ({ children }) => {
     // login function to handle user authentication and socket connection
     const login = async (state, credentials) => {
         try {
+            setIsLoggingIn(true);
             const { data } = await axios.post(`/api/auth/${state}`, credentials);
             if (data.success) {
                 setAuthUser(data.userData);
@@ -49,6 +51,8 @@ export const AuthProvider = ({ children }) => {
             }
         } catch (error) {
             toast.error(error.response.data?.message || "Something went wrong");
+        } finally {
+            setIsLoggingIn(false);
         }
     };
 
@@ -138,6 +142,7 @@ export const AuthProvider = ({ children }) => {
         updateProfileInfo,
         updateProfileImage,
         loading,
+        isLoggingIn,
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

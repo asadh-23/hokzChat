@@ -1,10 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
 import { Toaster } from "react-hot-toast";
-import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import assets from "./assets/assets";
 
@@ -13,7 +12,8 @@ const App = () => {
 
     if (loading) {
         return (
-            <div className="h-screen w-full flex items-center justify-center bg-[#0f0c29]">
+            /* h-[100dvh] ensures centering even with mobile address bars */
+            <div className="h-[100dvh] w-full flex items-center justify-center bg-[#0f0c29]">
                 <div className="flex flex-col items-center gap-4">
                     <div className="w-12 h-12 border-4 border-violet-500 border-t-transparent rounded-full animate-spin" />
                     <p className="text-white text-sm tracking-wide opacity-80">Loading...</p>
@@ -23,18 +23,18 @@ const App = () => {
     }
 
     return (
-        /* h-screen and overflow-hidden here is key to lock the main body scroll */
-        <div className="relative h-screen w-full overflow-hidden font-inter">
-            {/* Background Layer: Always fixed, never moves */}
+        /* ഡിസൈൻ മാറ്റാതെ കണ്ടന്റ് ലോക്ക് ചെയ്യാൻ h-screen നൊപ്പം overflow-hidden മാത്രം മതി */
+        <div className="h-screen w-full overflow-hidden relative">
+            {/* Background Layer */}
             <div
                 className="fixed inset-0 z-0 bg-cover bg-no-repeat bg-center"
                 style={{ backgroundImage: `url(${assets.bgImage})` }}
             />
 
-            {/* Dark Tint Overlay: Ithaanu Glassmorphism-u depth nalkunnath */}
-            <div className="fixed inset-0 z-10 bg-black/40 pointer-events-none" />
+            {/* Tint */}
+            <div className="fixed inset-0 z-10 bg-black/40" />
 
-            {/* Content Layer: All pages load here */}
+            {/* Routes Wrapper */}
             <div className="relative z-20 h-full w-full overflow-hidden">
                 <Toaster />
                 <Routes>
