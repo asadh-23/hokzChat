@@ -23,17 +23,26 @@ const App = () => {
     }
 
     return (
-        /* Ippo background image fixed aanu, so scroll cheythalum image move aavilla */
-        <div
-            className="h-screen w-full bg-cover bg-no-repeat bg-center bg-fixed overflow-hidden"
-            style={{ backgroundImage: `url(${assets.bgImage})` }}
-        >
-            <Toaster />
-            <Routes>
-                <Route path="/" element={authUser ? <HomePage /> : <Navigate to="/login" />} />
-                <Route path="/login" element={!authUser ? <LoginPage /> : <Navigate to="/" />} />
-                <Route path="/profile" element={authUser ? <ProfilePage /> : <Navigate to="/login" />} />
-            </Routes>
+        /* h-screen and overflow-hidden here is key to lock the main body scroll */
+        <div className="relative h-screen w-full overflow-hidden font-inter">
+            {/* Background Layer: Always fixed, never moves */}
+            <div
+                className="fixed inset-0 z-0 bg-cover bg-no-repeat bg-center"
+                style={{ backgroundImage: `url(${assets.bgImage})` }}
+            />
+
+            {/* Dark Tint Overlay: Ithaanu Glassmorphism-u depth nalkunnath */}
+            <div className="fixed inset-0 z-10 bg-black/40 pointer-events-none" />
+
+            {/* Content Layer: All pages load here */}
+            <div className="relative z-20 h-full w-full overflow-hidden">
+                <Toaster />
+                <Routes>
+                    <Route path="/" element={authUser ? <HomePage /> : <Navigate to="/login" />} />
+                    <Route path="/login" element={!authUser ? <LoginPage /> : <Navigate to="/" />} />
+                    <Route path="/profile" element={authUser ? <ProfilePage /> : <Navigate to="/login" />} />
+                </Routes>
+            </div>
         </div>
     );
 };

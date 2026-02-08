@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import { useState, useContext } from "react";
 import assets from "../assets/assets";
-import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
+import toast from "react-hot-toast";
 
 const LoginPage = () => {
     const [currState, setCurrState] = useState("Sign up");
@@ -25,20 +25,17 @@ const LoginPage = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // common validation
         if (!userData.email || !userData.password) {
             toast.error("Email and password are required");
             return;
         }
 
-        // email format check
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(userData.email)) {
             toast.error("Invalid email address");
             return;
         }
 
-        // signup-only validation
         if (currState === "Sign up") {
             if (!userData.fullName) {
                 toast.error("Full name is required");
@@ -75,8 +72,8 @@ const LoginPage = () => {
                 <form
                     onSubmit={handleSubmit}
                     className="relative border border-white/20 bg-white/10 backdrop-blur-2xl text-white
-                p-6 sm:p-8 md:p-10 flex flex-col gap-4 sm:gap-5 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] 
-                w-full max-w-[340px] sm:max-w-[380px] max-h-[85vh] overflow-y-auto custom-scrollbar transition-all duration-300"
+                p-6 sm:p-8 md:p-9 flex flex-col gap-3 sm:gap-4 md:gap-4 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] 
+                w-full max-w-[340px] sm:max-w-[380px] max-h-[85vh] md:max-h-none overflow-y-auto md:overflow-visible custom-scrollbar transition-all duration-300"
                 >
                     {/* Header with improved typography */}
                     <div className="space-y-1">
@@ -96,7 +93,7 @@ const LoginPage = () => {
                     </div>
 
                     {/* Input Fields Container */}
-                    <div className="flex flex-col gap-3 sm:gap-4">
+                    <div className="flex flex-col gap-3 sm:gap-3.5 md:gap-3">
                         {currState === "Sign up" && (
                             <input
                                 type="text"
@@ -144,20 +141,20 @@ const LoginPage = () => {
                     {/* Submit Button with Hover Effects */}
                     <button
                         type="submit"
-                        className="mt-2 bg-indigo-600 hover:bg-indigo-500 active:scale-[0.98] 
-                    transition-all py-3 sm:py-3.5 rounded-xl font-bold tracking-wide text-sm sm:text-base shadow-lg shadow-indigo-600/20"
+                        className="mt-1 md:mt-2 bg-indigo-600 hover:bg-indigo-500 active:scale-[0.98] 
+                    transition-all py-3 sm:py-3.5 md:py-3 rounded-xl font-bold tracking-wide text-sm sm:text-base shadow-lg shadow-indigo-600/20"
                     >
                         {currState === "Sign up" ? "Create Account" : "Sign In"}
                     </button>
 
                     {/* Terms and Privacy - Smaller on mobile */}
-                    <div className="flex items-start gap-2 text-[10px] sm:text-xs text-slate-500 px-1">
+                    <div className="flex items-start gap-2 text-[10px] sm:text-xs text-slate-500 px-1 md:mt-0">
                         <input type="checkbox" className="accent-indigo-500 cursor-pointer mt-0.5" required />
                         <p className="leading-tight">Agree to the terms of use & privacy policy.</p>
                     </div>
 
                     {/* Toggle - Improved Contrast */}
-                    <p className="text-xs sm:text-sm text-center text-slate-400 pt-2 border-t border-white/5">
+                    <p className="text-xs sm:text-sm text-center text-slate-400 pt-2 md:pt-2 border-t border-white/5">
                         {currState === "Sign up" ? (
                             <>
                                 Already have an account?{" "}
