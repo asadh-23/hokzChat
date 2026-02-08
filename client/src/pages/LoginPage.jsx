@@ -55,87 +55,111 @@ const LoginPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-cover bg-center flex items-center justify-center gap-10 sm:justify-evenly max-sm:flex-col backdrop-blur-xl">
-            {/* Left (UNCHANGED) */}
-            <img src={assets.logo_big} alt="Logo" className="w-[250px] max-w-[70vw]" />
+        // fixed inset-0 and h-[100dvh] ensures NO scroll on the main body
+        <div className="fixed inset-0 w-full h-[100dvh] bg-cover bg-center flex items-center justify-center p-4 sm:p-6 md:p-10 sm:justify-evenly max-sm:flex-col backdrop-blur-xl overflow-hidden">
+            {/* Left Section: Logo - Responsive width */}
+            <div className="flex shrink-0 items-center justify-center">
+                <img
+                    src={assets.logo_big}
+                    alt="Logo"
+                    className="w-[180px] sm:w-[220px] md:w-[250px] lg:w-[300px] max-w-[70vw] object-contain"
+                />
+            </div>
 
-            {/* Right (IMPROVED DESIGN ONLY) */}
+            {/* Right Section: Form - Oversize fixed for mobile */}
             <form
                 onSubmit={handleSubmit}
                 className="border border-white/20 bg-white/15 text-white
-        p-8 flex flex-col gap-5 rounded-2xl shadow-2xl w-[380px] max-w-[90vw]"
+            p-5 sm:p-8 flex flex-col gap-3 sm:gap-5 rounded-2xl shadow-2xl 
+            w-full max-w-[340px] sm:max-w-[380px] max-h-[90vh] overflow-y-auto custom-scrollbar"
             >
                 {/* Header */}
-                <div className="flex justify-between items-center mb-1">
-                    <h2 className="text-3xl font-semibold tracking-wide">{currState}</h2>
-                    <img src={assets.arrow_icon} alt="Back" className="w-5 cursor-pointer opacity-70 hover:opacity-100" />
+                <div className="flex justify-between items-center">
+                    <h2 className="text-2xl sm:text-3xl font-semibold tracking-wide">{currState}</h2>
+                    <img
+                        src={assets.arrow_icon}
+                        alt="Back"
+                        className="w-4 sm:w-5 cursor-pointer opacity-70 hover:opacity-100"
+                    />
                 </div>
-                <p className="text-sm text-gray-300 mb-3">
+
+                <p className="text-[12px] sm:text-sm text-gray-300">
                     {currState === "Sign up" ? "Create your account to get started" : "Welcome back, please login"}
                 </p>
-                {/* Full Name */}
-                {currState === "Sign up" && (
+
+                {/* Input Fields Container - Added spacing control */}
+                <div className="flex flex-col gap-2.5 sm:gap-4">
+                    {/* Full Name */}
+                    {currState === "Sign up" && (
+                        <input
+                            type="text"
+                            name="fullName"
+                            placeholder="Full Name"
+                            value={userData.fullName}
+                            onChange={handleChange}
+                            required
+                            className="auth-input text-sm sm:text-base"
+                        />
+                    )}
+
+                    {/* Email */}
                     <input
-                        type="text"
-                        name="fullName"
-                        placeholder="Full Name"
-                        value={userData.fullName}
+                        type="email"
+                        name="email"
+                        placeholder="Email Address"
+                        value={userData.email}
                         onChange={handleChange}
                         required
-                        className="auth-input"
+                        className="auth-input text-sm sm:text-base"
                     />
-                )}
-                {/* Email */}
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="Email Address"
-                    value={userData.email}
-                    onChange={handleChange}
-                    required
-                    className="auth-input"
-                />
-                {/* Password */}
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    value={userData.password}
-                    onChange={handleChange}
-                    required
-                    className="auth-input"
-                />
-                {/* Bio */}
-                {currState === "Sign up" && (
-                    <textarea
-                        name="bio"
-                        placeholder="Short bio about you"
-                        value={userData.bio}
+
+                    {/* Password */}
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Password"
+                        value={userData.password}
                         onChange={handleChange}
-                        rows={3}
-                        className="auth-input resize-none"
+                        required
+                        className="auth-input text-sm sm:text-base"
                     />
-                )}
-                {/* Submit */}
+
+                    {/* Bio - Reduced rows for mobile fitting */}
+                    {currState === "Sign up" && (
+                        <textarea
+                            name="bio"
+                            placeholder="Short bio about you"
+                            value={userData.bio}
+                            onChange={handleChange}
+                            rows={2}
+                            className="auth-input resize-none text-sm sm:text-base"
+                        />
+                    )}
+                </div>
+
+                {/* Submit Button */}
                 <button
                     type="submit"
-                    className="mt-2 bg-violet-600 hover:bg-violet-700
-          transition-all py-2.5 rounded-lg font-medium tracking-wide"
+                    className="mt-1 bg-violet-600 hover:bg-violet-700 active:scale-95
+                transition-all py-2.5 rounded-lg font-medium tracking-wide text-sm sm:text-base"
                 >
                     {currState}
                 </button>
-                <div className="flex items-center gap-2 text-sm text-slate-400">
-                    <input type="checkbox" className="accent-indigo-500 cursor-pointer" />
+
+                {/* Terms and Privacy */}
+                <div className="flex items-start gap-2 text-[10px] sm:text-sm text-slate-400">
+                    <input type="checkbox" className="accent-indigo-500 cursor-pointer mt-1" required />
                     <p>Agree to the terms of use & privacy policy.</p>
                 </div>
+
                 {/* Toggle */}
-                <p className="text-sm text-center text-gray-300 mt-2">
+                <p className="text-xs sm:text-sm text-center text-gray-300 mt-1">
                     {currState === "Sign up" ? (
                         <>
                             Already have an account?{" "}
                             <span
                                 onClick={() => setCurrState("Login")}
-                                className="text-violet-400 cursor-pointer hover:underline"
+                                className="text-violet-400 cursor-pointer hover:underline font-bold"
                             >
                                 Login
                             </span>
@@ -145,7 +169,7 @@ const LoginPage = () => {
                             Don’t have an account?{" "}
                             <span
                                 onClick={() => setCurrState("Sign up")}
-                                className="text-violet-400 cursor-pointer hover:underline"
+                                className="text-violet-400 cursor-pointer hover:underline font-bold"
                             >
                                 Sign up
                             </span>
@@ -154,27 +178,29 @@ const LoginPage = () => {
                 </p>
             </form>
 
-            {/* Utility class (RIGHT SIDE ONLY) */}
             <style>
                 {`
-          .auth-input {
-            width: 100%;
-            padding: 0.6rem 0.75rem;
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 0.6rem;
-            outline: none;
-            color: white;
-            transition: all 0.2s ease;
-          }
-          .auth-input:focus {
-            border-color: #8b5cf6;
-            box-shadow: 0 0 0 1px #8b5cf6;
-          }
-          .auth-input::placeholder {
-            color: #cbd5e1;
-          }
-        `}
+            .auth-input {
+                width: 100%;
+                padding: 0.5rem 0.75rem;
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid rgba(255,255,255,0.2);
+                border-radius: 0.6rem;
+                outline: none;
+                color: white;
+                transition: all 0.2s ease;
+            }
+            @media (min-width: 640px) {
+                .auth-input { padding: 0.6rem 0.75rem; }
+            }
+            .auth-input:focus {
+                border-color: #8b5cf6;
+                background: rgba(255, 255, 255, 0.1);
+            }
+            .auth-input::placeholder {
+                color: #cbd5e1;
+            }
+            `}
             </style>
         </div>
     );
